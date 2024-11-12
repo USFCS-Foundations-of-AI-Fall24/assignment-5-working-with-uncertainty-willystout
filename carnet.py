@@ -1,5 +1,6 @@
 from pgmpy.models import BayesianNetwork
 from pgmpy.inference import VariableElimination
+from torch.fx.experimental.unification import variables
 
 car_model = BayesianNetwork(
     [
@@ -7,7 +8,8 @@ car_model = BayesianNetwork(
         ("Battery", "Ignition"),
         ("Ignition","Starts"),
         ("Gas","Starts"),
-        ("Starts","Moves")
+        ("Starts","Moves"),
+        ("keyPresent", "Starts")
     ]
 )
 
@@ -60,12 +62,55 @@ cpd_moves = TabularCPD(
                  "Starts": ['yes', 'no'] }
 )
 
+cpd_keypresent = TabularCPD(
+    variable="keyPresent", variable_card=2,
+    values=[[0.70], [0.30]],
+    evidence=["Starts"],
+    evidence_card=[2],
+    state_names={"keyPresent": ['yes', "no"],
+                 "Starts": ['yes', 'no'] },
+)
 
 # Associating the parameters with the model structure
 car_model.add_cpds( cpd_starts, cpd_ignition, cpd_gas, cpd_radio, cpd_battery, cpd_moves)
 
 car_infer = VariableElimination(car_model)
 
-print(car_infer.query(variables=["Moves"],evidence={"Radio":"turns on", "Starts":"yes"}))
+def question_four():
+    # print(car_infer.query(variables=["Moves"],evidence={"Radio":"turns on", "Starts":"yes"}))
+    print("Given that the car will not move, what is the probability that the battery is not working?")
+    print(car_infer.query(variables=["Battery"],evidence={"Moves":"no"}))
+    print()
+
+    print("Given that the radio is not working, what is the probability that the car will not start?")
+    print(car_infer.query(variables=["Starts"],evidence={"Radio":"Doesn't turn on"}))
+    print()
+
+    print("Given that the battery is working, does the probability of the radio working change if we discover that the car has gas in it?")
+    print()
+
+    print("Unknown Gas")
+    print(car_infer.query(variables=["Radio"],evidence={"Battery":"Works"}))
+    print()
+
+    print("Gas Full")
+    print(car_infer.query(variables=["Radio"],evidence={"Battery":"Works", "Gas":"Full"}))
+    print()
+
+    print("Given that the car doesn't move, how does the probability of the ignition failing change if we observe that the car dies not have gas in it?")
+    print()
+
+    print("If we do not know if the car has gas in it")
+    print(car_infer.query(variables=["Ignition"],evidence={"Moves":"no"}))
+    print()
+
+    print("If we do know that the car has no gas in it")
+    print(car_infer.query(variables=["Ignition"],evidence={"Moves":"no", "Gas":"Empty"}))
+    print()
+
+    print("What is the probability that the car starts if the radio works and it has gas in it?")
+    print()
+    print(car_infer.query(variables=["Starts"],evidence={"Radio":"turns on","Gas":"Full"}))
+
 
 

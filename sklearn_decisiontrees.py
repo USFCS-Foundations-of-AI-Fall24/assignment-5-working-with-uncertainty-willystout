@@ -1,5 +1,5 @@
 
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn import tree
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
@@ -11,18 +11,19 @@ import joblib
 ### This code shows how to use KFold to do cross_validation.
 ### This is just one of many ways to manage training and test sets in sklearn.
 
-iris = load_iris()
-X, y = iris.data, iris.target
+cancer = load_breast_cancer()
+X, y = cancer.data, cancer.target
 scores = []
 kf = KFold(n_splits=5)
 for train_index, test_index in kf.split(X) :
     X_train, X_test, y_train, y_test = \
         (X[train_index], X[test_index], y[train_index], y[test_index])
-    clf = tree.DecisionTreeClassifier()
+    # clf = tree.DecisionTreeClassifier()
+    clf = RandomForestClassifier()
     clf.fit(X_train, y_train)
     scores.append(clf.score(X_test, y_test))
 
-print(scores)
+print("Scores: ", scores)
 
 ## Part 2. This code (from https://scikit-learn.org/1.5/auto_examples/ensemble/plot_forest_hist_grad_boosting_comparison.html)
 ## shows how to use GridSearchCV to do a hyperparameter search to compare two techniques.
