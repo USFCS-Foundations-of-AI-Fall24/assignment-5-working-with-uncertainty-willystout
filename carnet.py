@@ -47,10 +47,10 @@ cpd_ignition = TabularCPD(
 cpd_starts = TabularCPD(
     variable="Starts",
     variable_card=2,
-    values=[[0.95, 0.05, 0.05, 0.001], [0.05, 0.95, 0.95, 0.9999]],
-    evidence=["Ignition", "Gas"],
-    evidence_card=[2, 2],
-    state_names={"Starts":['yes','no'], "Ignition":["Works", "Doesn't work"], "Gas":['Full',"Empty"]},
+    values=[[0.99, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01], [0.01, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99]   ],
+    evidence=["Ignition", "Gas", "keyPresent"],
+    evidence_card=[2, 2, 2],
+    state_names={"Starts":['yes','no'], "Ignition":["Works", "Doesn't work"], "Gas":['Full',"Empty"], "keyPresent":['yes','no'],}
 )
 
 cpd_moves = TabularCPD(
@@ -63,16 +63,14 @@ cpd_moves = TabularCPD(
 )
 
 cpd_keypresent = TabularCPD(
-    variable="keyPresent", variable_card=2,
+    variable="keyPresent",
+    variable_card=2,
     values=[[0.70], [0.30]],
-    evidence=["Starts"],
-    evidence_card=[2],
-    state_names={"keyPresent": ['yes', "no"],
-                 "Starts": ['yes', 'no'] },
+    state_names={"keyPresent": ['yes', "no"]},
 )
 
 # Associating the parameters with the model structure
-car_model.add_cpds( cpd_starts, cpd_ignition, cpd_gas, cpd_radio, cpd_battery, cpd_moves)
+car_model.add_cpds( cpd_starts, cpd_ignition, cpd_gas, cpd_radio, cpd_battery, cpd_moves, cpd_keypresent)
 
 car_infer = VariableElimination(car_model)
 
@@ -112,5 +110,8 @@ def question_four():
     print()
     print(car_infer.query(variables=["Starts"],evidence={"Radio":"turns on","Gas":"Full"}))
 
+    print()
+    print("Probability of keyPresent given that the car does not move:")
+    print(car_infer.query(variables=["keyPresent"], evidence={"Moves": "no"}))
 
 
