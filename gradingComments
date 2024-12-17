@@ -1,0 +1,51 @@
+Assignment 5 Comments:
+
+sklearn:
+
+new dataset. 5/5
+
+random forest 5/5
+
+GridSearchCV 5/5
+
+Scatterplot 5/5
+
+Belief Networks:
+
+alarm queries 5/5
+
+car queries 5/5
+
+additional node 5/5
+
+HMM:
+
+load 5/5
+
+generate 8/10
+Your command-line interface is a little funky here. Generate should return
+a sequence, which the function does, but then main discards it.
+
+lander models 5/5
+
+forward 8/10 same command-line problem with forward; the algorithm itself 
+seems fine, but I can't provide input.
+
+viterbi 15/15
+
+Utility:
+
+q1 5/5
+
+q2 5/5
+
+q3 2/2
+
+q4 3/3
+
+q5 2/2
+
+q6 3/3
+
+96/100
+
